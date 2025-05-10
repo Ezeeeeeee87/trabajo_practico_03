@@ -2,6 +2,8 @@
 from django.shortcuts import render, redirect
 from .forms import CustomUserCreationForm, ClienteForm, ProfesorForm
 from .models import Cliente, Profesor
+from django.db.models import Q
+from .models import CustomUser
 
 def registrar_cliente(request):
     if request.method == 'POST':
@@ -39,7 +41,21 @@ def registrar_profesor(request):
         'profesor_form': profesor_form
     })
 
-from django.shortcuts import render
+
+
+def buscar_usuarios(request):
+    query = request.GET.get('q')
+    resultados = []
+
+    if query:
+        resultados = CustomUser.objects.filter(
+            Q(username__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(email__icontains=query)
+        )
+
+    return render(request, 'buscar_usuarios.html', {'resultados': resultados})
 
 # Pagina de de inicio 
 def home(request):
