@@ -1,0 +1,15 @@
+<h2>Buscar usuarios</h2>
+<form method="get">
+    <input type="text" name="q" placeholder="Buscar por nombre o email">
+    <button type="submit">Buscar</button>
+</form>
+
+{% if resultados %}
+    <ul>
+    {% for usuario in resultados %}
+        <li>{{ usuario.first_name }} {{ usuario.last_name }} - {{ usuario.email }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No se encontraron resultados</p>
+{% endif %}
