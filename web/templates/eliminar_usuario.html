@@ -1,0 +1,14 @@
+<!-- eliminar_usuario.html -->
+{% extends 'base_generic.html' %}
+
+{% block content %}
+  <h1>Eliminar Usuario</h1>
+  <p>¿Estás seguro de que deseas eliminar al usuario "{{ user.username }}"?</p>
+  
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+  </form>
+  
+  <a href="{% url 'home_superuser' %}" class="btn btn-secondary">Cancelar</a>
+{% endblock %}

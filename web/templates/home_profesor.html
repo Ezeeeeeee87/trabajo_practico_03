@@ -1,23 +1,49 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Panel de Profesor</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <h1>Bienvenido, {{ user.username }}</h1>
-        <h2>Panel de Profesor</h2>
-        <ul>
-            <li><a href="{% url 'home_profesor' %}">Ver mis clases</a></li>
-            <li><a href="{% url 'home_profesor' %}">Gestionar alumnos</a></li>
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Cerrar sesión</button>
-            </form>
+{% extends 'base.html' %}
 
-        </ul>
+{% block title %}Panel Profesor{% endblock %}
+
+{% block content %}
+<div class="bg-white p-8 rounded-2xl shadow-md space-y-6">
+
+    <h2 class="text-2xl font-bold text-blue-700">Bienvenido, Profesor {{ user.first_name }}</h2>
+
+    <!-- Información del profesor -->
+    <div class="bg-gray-50 p-4 rounded-lg shadow-inner">
+        <h3 class="text-lg font-semibold text-gray-800">Información del Profesor</h3>
+        <p><strong>Nombre:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+        <p><strong>Correo:</strong> {{ user.email }}</p>
+        <p><strong>Puesto:</strong> {{ profesor.puesto }}</p>
     </div>
-</body>
-</html>
+
+    <!-- Tareas y actividades -->
+    <div class="bg-gray-50 p-4 rounded-lg shadow-inner mt-6">
+        <h3 class="text-lg font-semibold text-gray-800">Tus Tareas</h3>
+        <ul class="space-y-3">
+            <li class="flex justify-between items-center">
+                <span>Clase de Yoga - 10:00 AM</span>
+                <span class="bg-green-200 text-green-700 px-3 py-1 rounded-full">Confirmado</span>
+            </li>
+            <li class="flex justify-between items-center">
+                <span>Entrenamiento Personalizado - 2:00 PM</span>
+                <span class="bg-yellow-200 text-yellow-700 px-3 py-1 rounded-full">Pendiente</span>
+            </li>
+            <li class="flex justify-between items-center">
+                <span>Revisión de Plan de Dieta</span>
+                <span class="bg-blue-200 text-blue-700 px-3 py-1 rounded-full">Completado</span>
+            </li>
+        </ul>
+        <form method="get" action="{% url 'home_profesor' %}" class="mb-4">
+            <form method="get" action="{% url 'home_profesor' %}" class="mb-4">
+            <input type="text" name="q" placeholder="Buscar cliente..." class="border p-2 rounded">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Buscar</button>
+        </form>
+        <ul>
+            {% for cliente in clientes %}
+                <li>{{ cliente.user.first_name }} {{ cliente.user.last_name }} - DNI: {{ cliente.dni }}</li>
+            {% empty %}
+                <li>No se encontraron clientes.</li>
+            {% endfor %}
+        </ul>
+
+</div>
+{% endblock %}

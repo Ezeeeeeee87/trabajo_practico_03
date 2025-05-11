@@ -1,78 +1,38 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Profesor</title>
-    <!-- Incluir Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-6 mt-5">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <h1>Registro de Profesor</h1>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST">
-                            {% csrf_token %}
-                            <!-- Nombre -->
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" required>
-                            </div>
+{% extends 'base.html' %}
 
-                            <!-- Edad -->
-                            <div class="mb-3">
-                                <label for="edad" class="form-label">Edad</label>
-                                <input type="number" class="form-control" id="edad" name="edad" required>
-                            </div>
+{% block title %}Registro de Profesor{% endblock %}
 
-                            <!-- DNI -->
-                            <div class="mb-3">
-                                <label for="dni" class="form-label">DNI</label>
-                                <input type="text" class="form-control" id="dni" name="dni" required>
-                            </div>
-
-                            <!-- Email -->
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
-                            </div>
-
-                            <!-- Dirección -->
-                            <div class="mb-3">
-                                <label for="direccion" class="form-label">Dirección</label>
-                                <input type="text" class="form-control" id="direccion" name="direccion" required>
-                            </div>
-
-                            <!-- Género -->
-                            <div class="mb-3">
-                                <label for="genero" class="form-label">Género</label>
-                                <select class="form-select" id="genero" name="genero" required>
-                                    <option value="masculino">Masculino</option>
-                                    <option value="femenino">Femenino</option>
-                                    <option value="otro">Otro</option>
-                                </select>
-                            </div>
-
-                            <!-- Puesto -->
-                            <div class="mb-3">
-                                <label for="puesto" class="form-label">Puesto</label>
-                                <input type="text" class="form-control" id="puesto" name="puesto" required>
-                            </div>
-
-                            <button type="submit" class="btn btn-success btn-lg w-100">Registrar Profesor</button>
-                        </form>
-                    </div>
-                </div>
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Registro de Profesor</h2>
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Formulario de usuario -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="id_username" class="block text-sm font-semibold text-gray-700">Nombre de usuario</label>
+                {{ user_form.username }}
+            </div>
+            <div>
+                <label for="id_password1" class="block text-sm font-semibold text-gray-700">Contraseña</label>
+                {{ user_form.password1 }}
+            </div>
+            <div>
+                <label for="id_password2" class="block text-sm font-semibold text-gray-700">Confirmar contraseña</label>
+                {{ user_form.password2 }}
             </div>
         </div>
-    </div>
 
-    <!-- Incluir Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+        <!-- Formulario de profesor -->
+        <div class="grid grid-cols-1 gap-6">
+            <div>
+                <label for="id_puesto" class="block text-sm font-semibold text-gray-700">Puesto</label>
+                {{ profesor_form.puesto }}
+            </div>
+        </div>
+
+        <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition duration-200">Registrar</button>
+    </form>
+</div>
+{% endblock %}
