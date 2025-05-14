@@ -7,7 +7,7 @@
 {% if resultados %}
     <ul>
     {% for usuario in resultados %}
-        <li>{{ usuario.first_name }} {{ usuario.last_name }} - {{ usuario.email }}</li>
+        <li>{{ usuario.first_name }} {{ usuario.last_name }} - {{ usuario.dni }} - {{ usuario.email }}</li>
     {% endfor %}
     </ul>
 {% else %}

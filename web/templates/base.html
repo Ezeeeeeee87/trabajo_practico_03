@@ -1,4 +1,6 @@
+{% load static %}
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -26,10 +28,15 @@
     </nav>
 
     <!-- Contenido principal -->
-    <main class="max-w-4xl mx-auto py-10 px-4">
-        {% block content %}
-        <!-- Contenido de la página específica -->
-        {% endblock %}
+    <main class="h-screen flex items-center justify-center flex-col px-4 bg-cover bg-center"
+            style="background-image: url('{% static 'imagenes/fondo_web.jpeg' %}')">       
+        
+            <div class="max-w-4xl mx-auto py-10 px-4 w-full">
+            {% block content %}
+            <h1 class="text-6xl text-center text-white font-bold mb-6">Bienvenido a Nuestra web</h1> 
+            {% endblock %}
+            </div>
+ 
     </main>
 
     <!-- Footer opcional -->

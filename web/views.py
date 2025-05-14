@@ -9,7 +9,8 @@ from .models import CustomUser, Cliente, Profesor
 from .decoradores import role_required
 from .decoradores import solo_profesores
 
-
+def home(request):
+    return render(request, 'base.html')
 
 def login(request):
     if request.method == "POST":
@@ -32,16 +33,35 @@ def login(request):
 
 @login_required
 def home_redirect(request):
-    if request.user.is_superuser:
-        return redirect('home_superusuario')
-    elif request.user.rol == 'profesor':
-        return redirect('home_profesor')
-    else:
-        return redirect('home_cliente')
+    user = request.user
+    if user.is_authenticated:
+        if user.is_superuser:
+            return redirect('superuser_dashboard')
+        elif user.rol == 'profesor':
+            return redirect('profesor_dashboard')
+        elif user.rol == 'cliente':
+            return redirect('cliente_dashboard')
+    return redirect('login')
 
 @login_required
 def panel_superusuario(request):
-    return render(request, 'home_superuser.html')
+    query = request.GET.get('q')
+    resultados = []
+
+    if query:
+        resultados = CustomUser.objects.filter(
+            Q(username__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(email__icontains=query)
+        )
+    
+    context = {
+        'resultados': resultados,
+        'query': query,  # para mantener el texto en el input
+    }
+
+    return render(request, 'home_superuser.html', context)
 
 
 @login_required
@@ -75,22 +95,16 @@ def logout_view(request):
 def registrar_cliente(request):
     if request.method == 'POST':
         user_form = CustomUserCreationForm(request.POST)
-        cliente_form = ClienteForm(request.POST)
-        if user_form.is_valid() and cliente_form.is_valid():
+        if user_form.is_valid():
             user = user_form.save(commit=False)
-            user.rol = 'cliente'
+            user.rol = 'cliente'  # muy importante si tenés campo "rol"
             user.save()
-            cliente = cliente_form.save(commit=False)
-            cliente.user = user
-            cliente.save()
-            return redirect('login')
+            messages.success(request, 'Cliente creado con éxito.')
+            return redirect('home_superusuario')  # o a donde quieras redirigir
     else:
         user_form = CustomUserCreationForm()
-        cliente_form = ClienteForm()
-    return render(request, 'registro_cliente.html', {
-        'user_form': user_form,
-        'cliente_form': cliente_form
-    })
+    
+    return render(request, 'registro_cliente.html', {'user_form': user_form})
 
 @login_required
 def editar_perfil_cliente(request):
@@ -157,9 +171,7 @@ def home_redirect(request):
 def eliminar_usuario(request):
     if request.method == 'POST':
         username = request.POST.get('username')
-        
         try:
-            # Usa CustomUser en lugar de User
             usuario = CustomUser.objects.get(username=username)
             usuario.delete()
             messages.success(request, f"El usuario {username} ha sido eliminado correctamente.")
@@ -167,4 +179,4 @@ def eliminar_usuario(request):
             messages.error(request, f"El usuario con el nombre de usuario '{username}' no existe.")
         
         return redirect('home_superusuario')  # Redirige al panel de administración
-    return render(request, 'ruta/a/tu/template.html')  # Aquí, asegúrate de que esto sea correcto.
+    return render(request, 'base.html')  # Aquí, asegúrate de que esto sea correcto.
