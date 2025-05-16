@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Registro de Cliente{% endblock %}
+{% if messages %}
+  <div class="mb-4">
+    {% for message in messages %}
+      <div class="p-4 rounded text-white {{ message.tags }} bg-green-500">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md">

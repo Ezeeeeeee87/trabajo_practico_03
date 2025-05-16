@@ -6,15 +6,57 @@
 <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md">
     <h2 class="text-2xl font-semibold text-gray-700 mb-6">Registro de Profesor</h2>
     <form method="post" class="space-y-6">
-        {% csrf_token %}
         
+       
+        {% if user_form.errors %}
+        <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
+            <ul class="list-disc list-inside">
+            {% for field in user_form %}
+                {% for error in field.errors %}
+                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            {% for error in user_form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% csrf_token %}
+
         <!-- Formulario de usuario -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="id_apellido" class="block text-sm font-semibold text-gray-700">Apellido</label>
+                {{ user_form.last_name }}
+            </div>
+              <div>
+                <label for="id_nombre" class="block text-sm font-semibold text-gray-700">Nombre</label>
+                {{ user_form.first_name }}
+            </div>
+
+            <div>
+                <label for="id_dni" class="block text-sm font-semibold text-gray-700">DNI</label>
+                {{ user_form.dni }}
+            </div>
+            <div>
+                <label for="id_direccion" class="block text-sm font-semibold text-gray-700">Dirección</label>
+                {{ user_form.direccion }}
+            </div>
+            <div>
+                <label for="id_genero" class="block text-sm font-semibold text-gray-700">Género</label>
+                {{ user_form.genero }}
+            </div>
+               <div>
+                <label for="id_email" class="block text-sm font-semibold text-gray-700">email</label>
+                {{ user_form.email }}
+            </div>
             <div>
                 <label for="id_username" class="block text-sm font-semibold text-gray-700">Nombre de usuario</label>
                 {{ user_form.username }}
             </div>
-            <div>
+                        <div>
                 <label for="id_password1" class="block text-sm font-semibold text-gray-700">Contraseña</label>
                 {{ user_form.password1 }}
             </div>
@@ -22,14 +64,11 @@
                 <label for="id_password2" class="block text-sm font-semibold text-gray-700">Confirmar contraseña</label>
                 {{ user_form.password2 }}
             </div>
-        </div>
-
-        <!-- Formulario de profesor -->
-        <div class="grid grid-cols-1 gap-6">
-            <div>
+                        <div>
                 <label for="id_puesto" class="block text-sm font-semibold text-gray-700">Puesto</label>
                 {{ profesor_form.puesto }}
             </div>
+             
         </div>
 
         <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition duration-200">Registrar</button>

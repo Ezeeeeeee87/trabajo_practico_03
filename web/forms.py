@@ -5,7 +5,7 @@ from .models import CustomUser, Cliente, Profesor
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser
-        fields = ['username','first_name','last_name', 'password1', 'password2', 'dni', 'direccion', 'genero','email']
+        fields = ['username','first_name','last_name', 'password1', 'password2', 'dni', 'direccion', 'genero','email',]
 
 # Formulario para Cliente
 class ClienteForm(forms.ModelForm):

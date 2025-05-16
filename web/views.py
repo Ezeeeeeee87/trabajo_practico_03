@@ -58,7 +58,7 @@ def panel_superusuario(request):
     
     context = {
         'resultados': resultados,
-        'query': query,  # para mantener el texto en el input
+        'query': query,  
     }
 
     return render(request, 'home_superuser.html', context)
@@ -68,16 +68,22 @@ def panel_superusuario(request):
 @solo_profesores
 def panel_profesor(request):
     query = request.GET.get('q')
-    if query:
-        clientes = Cliente.objects.filter(
-            Q(user__first_name__icontains=query) |
-            Q(user__last_name__icontains=query) |
-            Q(dni__icontains=query)
-        )
-    else:
-        clientes = Cliente.objects.all()
+    resultados = []
 
-    return render(request, 'home_profesor.html', {'clientes': clientes})
+    if query:
+        resultados = CustomUser.objects.filter(
+            Q(username__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(email__icontains=query)
+        )
+    
+    context = {
+        'resultados': resultados,
+        'query': query,  
+    }
+
+    return render(request, 'home_profesor.html', context)
 
 @login_required
 def panel_cliente(request):
@@ -97,10 +103,19 @@ def registrar_cliente(request):
         user_form = CustomUserCreationForm(request.POST)
         if user_form.is_valid():
             user = user_form.save(commit=False)
-            user.rol = 'cliente'  # muy importante si tenés campo "rol"
+            user.rol = 'cliente'
             user.save()
+
+            # Crear instancia Cliente relacionada
+            Cliente.objects.create(
+                user=user,
+                direccion=user.direccion,
+                genero=user.genero,
+                dni=user.dni
+            )
+
             messages.success(request, 'Cliente creado con éxito.')
-            return redirect('home_superusuario')  # o a donde quieras redirigir
+            return redirect('home_superusuario')
     else:
         user_form = CustomUserCreationForm()
     
@@ -133,7 +148,7 @@ def registrar_profesor(request):
             profesor.user = user
             profesor.save()
 
-            return redirect('login')  # Redirigir al login después del registro
+            return redirect('home_superusuario')  # Redirigir después del registro
     else:
         user_form = CustomUserCreationForm()
         profesor_form = ProfesorForm()

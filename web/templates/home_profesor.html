@@ -19,31 +19,35 @@
     <div class="bg-gray-50 p-4 rounded-lg shadow-inner mt-6">
         <h3 class="text-lg font-semibold text-gray-800">Tus Tareas</h3>
         <ul class="space-y-3">
-            <li class="flex justify-between items-center">
-                <span>Clase de Yoga - 10:00 AM</span>
-                <span class="bg-green-200 text-green-700 px-3 py-1 rounded-full">Confirmado</span>
-            </li>
+           
             <li class="flex justify-between items-center">
                 <span>Entrenamiento Personalizado - 2:00 PM</span>
                 <span class="bg-yellow-200 text-yellow-700 px-3 py-1 rounded-full">Pendiente</span>
             </li>
-            <li class="flex justify-between items-center">
-                <span>Revisión de Plan de Dieta</span>
-                <span class="bg-blue-200 text-blue-700 px-3 py-1 rounded-full">Completado</span>
-            </li>
+
         </ul>
-        <form method="get" action="{% url 'home_profesor' %}" class="mb-4">
-            <form method="get" action="{% url 'home_profesor' %}" class="mb-4">
-            <input type="text" name="q" placeholder="Buscar cliente..." class="border p-2 rounded">
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Buscar</button>
-        </form>
-        <ul>
-            {% for cliente in clientes %}
-                <li>{{ cliente.user.first_name }} {{ cliente.user.last_name }} - DNI: {{ cliente.dni }}</li>
-            {% empty %}
-                <li>No se encontraron clientes.</li>
-            {% endfor %}
-        </ul>
+        
+        
+        <!--Buscar cliente-->
+    <form method="get" class="mb-4">
+    <input type="text" name="q" placeholder="Buscar Cliente"
+        value="{{ query }}"
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+    <button type="submit" class="bg-blue-700 hover:bg-blue-500 text-white px-4 py-1 rounded-lg shadow-md mt-2">Buscar</button>
+    </form>
+    {% if query %}
+        {% if resultados %}
+            <ul class="space-y-2 mt-4">
+                {% for usuario in resultados %}
+                    <li class="bg-gray-100 p-3 rounded-lg shadow">
+                        {{ usuario.first_name }} {{ usuario.last_name }} - {{ usuario.dni }} - {{ usuario.email }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-gray-500 mt-4">No se encontraron resultados para "{{ query }}".</p>
+        {% endif %}
+    {% endif %}
 
 </div>
 {% endblock %}
