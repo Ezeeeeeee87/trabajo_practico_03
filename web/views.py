@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -182,16 +182,35 @@ def home_redirect(request):
     else:
         return redirect('home_cliente')
 
-
 def eliminar_usuario(request):
     if request.method == 'POST':
         username = request.POST.get('username')
-        try:
-            usuario = CustomUser.objects.get(username=username)
-            usuario.delete()
-            messages.success(request, f"El usuario {username} ha sido eliminado correctamente.")
-        except CustomUser.DoesNotExist:
-            messages.error(request, f"El usuario con el nombre de usuario '{username}' no existe.")
+        if not username:
+            messages.error(request, "No se especificó ningún usuario.")
+            return redirect('home_superusuario')
+        return redirect(f'/eliminar_usuario/?username={username}')
+
+    username = request.GET.get('username')
+    if not username:
+        messages.error(request, "No se especificó ningún usuario para eliminar.")
+        return redirect('home_superusuario')
+
+    usuario = CustomUser.objects.filter(username=username).first()
+    if not usuario:
+        messages.error(request, f"El usuario '{username}' no existe.")
+        return redirect('home_superusuario')
+
+    return render(request, 'eliminar_usuario.html', {'usuario': usuario})
+
+# def eliminar_usuario(request,username):
+#     if request.method == 'POST':
+#         username = request.POST.get('username')
+#         try:
+#             usuario = CustomUser.objects.get(username=username)
+#             usuario.delete()
+#             messages.success(request, f"El usuario {username} ha sido eliminado correctamente.")
+#         except CustomUser.DoesNotExist:
+#             messages.error(request, f"El usuario con el nombre de usuario '{username}' no existe.")
         
-        return redirect('home_superusuario')  # Redirige al panel de administración
-    return render(request, 'base.html')  # Aquí, asegúrate de que esto sea correcto.
+#         return redirect('home_superusuario')  # Redirige al panel de administración
+#     return render(request, 'base.html')  # Aquí, asegúrate de que esto sea correcto.

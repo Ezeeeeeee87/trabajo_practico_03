@@ -8,11 +8,9 @@ urlpatterns = [
     path('registro/profesor/', views.registrar_profesor, name='registro_profesor'),
     path('cliente/editar/', views.editar_perfil_cliente, name='editar_perfil_cliente'),
     path('eliminar_usuario/', views.eliminar_usuario, name='eliminar_usuario'),
-    
-    # path('buscar/', views.buscar_usuarios, name='buscar_usuarios'),
+    #path('gestion_clientes/', views.gestion_clientes, name='gestion_clientes'),
     
     path('login/', views.login, name='login'),
-    #path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', views.logout_view, name='logout'),
     
     path('', views.home, name='home'),
