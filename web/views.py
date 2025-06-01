@@ -58,7 +58,7 @@ def panel_superusuario(request):
     
     context = {
         'resultados': resultados,
-        'query': query,  # para mantener el texto en el input
+        'query': query,  
     }
 
     return render(request, 'home_superuser.html', context)
@@ -68,16 +68,22 @@ def panel_superusuario(request):
 @solo_profesores
 def panel_profesor(request):
     query = request.GET.get('q')
-    if query:
-        clientes = Cliente.objects.filter(
-            Q(user__first_name__icontains=query) |
-            Q(user__last_name__icontains=query) |
-            Q(dni__icontains=query)
-        )
-    else:
-        clientes = Cliente.objects.all()
+    resultados = []
 
-    return render(request, 'home_profesor.html', {'clientes': clientes})
+    if query:
+        resultados = CustomUser.objects.filter(
+            Q(username__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(email__icontains=query)
+        )
+    
+    context = {
+        'resultados': resultados,
+        'query': query,  
+    }
+
+    return render(request, 'home_profesor.html', context)
 
 @login_required
 def panel_cliente(request):
@@ -97,10 +103,19 @@ def registrar_cliente(request):
         user_form = CustomUserCreationForm(request.POST)
         if user_form.is_valid():
             user = user_form.save(commit=False)
-            user.rol = 'cliente'  # muy importante si tenés campo "rol"
+            user.rol = 'cliente'
             user.save()
+
+            # Crear instancia Cliente asociada al usuario
+            Cliente.objects.create(
+                user=user,
+                direccion=user.direccion,
+                genero=user.genero,
+                dni=user.dni
+            )
+
             messages.success(request, 'Cliente creado con éxito.')
-            return redirect('home_superusuario')  # o a donde quieras redirigir
+            return redirect('home_superusuario')
     else:
         user_form = CustomUserCreationForm()
     
@@ -132,8 +147,9 @@ def registrar_profesor(request):
             profesor = profesor_form.save(commit=False)
             profesor.user = user
             profesor.save()
-
-            return redirect('login')  # Redirigir al login después del registro
+            
+            messages.success(request, 'Profesor creado con éxito.')
+            return redirect('home_superusuario')  # Redirigir después del registro
     else:
         user_form = CustomUserCreationForm()
         profesor_form = ProfesorForm()
@@ -167,16 +183,48 @@ def home_redirect(request):
     else:
         return redirect('home_cliente')
 
-
 def eliminar_usuario(request):
     if request.method == 'POST':
         username = request.POST.get('username')
-        try:
-            usuario = CustomUser.objects.get(username=username)
-            usuario.delete()
-            messages.success(request, f"El usuario {username} ha sido eliminado correctamente.")
-        except CustomUser.DoesNotExist:
-            messages.error(request, f"El usuario con el nombre de usuario '{username}' no existe.")
+        confirm = request.POST.get('confirm')
+
+        if not username:
+            messages.error(request, "No se especificó ningún usuario.")
+            return redirect('home_superusuario')
+
+        if confirm == '1':
+            usuario = CustomUser.objects.filter(username=username).first()  # Confirmación final → eliminar
+            if usuario:
+                usuario.delete()
+                messages.success(request, f"El usuario '{username}' ha sido eliminado.")
+            else:
+                messages.error(request, f"El usuario '{username}' no existe.")
+            return redirect('home_superusuario')
+
+        return redirect(f'/eliminar_usuario/?username={username}') # Primera vez: redirigir a confirmación
+
+    username = request.GET.get('username') # GET → mostrar confirmación
+    if not username:
+        messages.error(request, "No se especificó ningún usuario para eliminar.")
+        return redirect('home_superusuario')
+
+    usuario = CustomUser.objects.filter(username=username).first()
+    if not usuario:
+        messages.error(request, f"El usuario '{username}' no existe.")
+        return redirect('home_superusuario')
+
+    return render(request, 'eliminar_usuario.html', {'usuario': usuario})
+
+
+# def eliminar_usuario(request,username):
+#     if request.method == 'POST':
+#         username = request.POST.get('username')
+#         try:
+#             usuario = CustomUser.objects.get(username=username)
+#             usuario.delete()
+#             messages.success(request, f"El usuario {username} ha sido eliminado correctamente.")
+#         except CustomUser.DoesNotExist:
+#             messages.error(request, f"El usuario con el nombre de usuario '{username}' no existe.")
         
-        return redirect('home_superusuario')  # Redirige al panel de administración
-    return render(request, 'base.html')  # Aquí, asegúrate de que esto sea correcto.
+#         return redirect('home_superusuario')  # Redirige al panel de administración
+#     return render(request, 'base.html')  # Aquí, asegúrate de que esto sea correcto.

@@ -11,10 +11,35 @@
         <!-- Formulario de usuario -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
+                <label for="id_apellido" class="block text-sm font-semibold text-gray-700">Apellido</label>
+                {{ user_form.last_name }}
+            </div>
+              <div>
+                <label for="id_nombre" class="block text-sm font-semibold text-gray-700">Nombre</label>
+                {{ user_form.first_name }}
+            </div>
+
+            <div>
+                <label for="id_dni" class="block text-sm font-semibold text-gray-700">DNI</label>
+                {{ user_form.dni }}
+            </div>
+            <div>
+                <label for="id_direccion" class="block text-sm font-semibold text-gray-700">Dirección</label>
+                {{ user_form.direccion }}
+            </div>
+            <div>
+                <label for="id_genero" class="block text-sm font-semibold text-gray-700">Género</label>
+                {{ user_form.genero }}
+            </div>
+               <div>
+                <label for="id_email" class="block text-sm font-semibold text-gray-700">email</label>
+                {{ user_form.email }}
+            </div>
+            <div>
                 <label for="id_username" class="block text-sm font-semibold text-gray-700">Nombre de usuario</label>
                 {{ user_form.username }}
             </div>
-            <div>
+                        <div>
                 <label for="id_password1" class="block text-sm font-semibold text-gray-700">Contraseña</label>
                 {{ user_form.password1 }}
             </div>
@@ -22,7 +47,7 @@
                 <label for="id_password2" class="block text-sm font-semibold text-gray-700">Confirmar contraseña</label>
                 {{ user_form.password2 }}
             </div>
-        </div>
+        </div>     
 
         <!-- Formulario de profesor -->
         <div class="grid grid-cols-1 gap-6">

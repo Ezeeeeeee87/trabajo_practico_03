@@ -1,14 +1,30 @@
-<!-- eliminar_usuario.html -->
-{% extends 'base_generic.html' %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Confirmar Eliminación{% endblock %}
 
 {% block content %}
-  <h1>Eliminar Usuario</h1>
-  <p>¿Estás seguro de que deseas eliminar al usuario "{{ user.username }}"?</p>
-  
-  <form method="POST">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Eliminar</button>
-  </form>
-  
-  <a href="{% url 'home_superuser' %}" class="btn btn-secondary">Cancelar</a>
+<div class="bg-white p-8 rounded-2xl shadow-md space-y-6 max-w-xl mx-auto mt-10">
+
+    <h2 class="text-center text-2xl font-bold text-red-700">Eliminar Usuario</h2>
+
+    <p class="text-center text-gray-700 text-lg">
+        ¿Estás seguro de que deseas eliminar al usuario 
+        <span class="font-semibold text-black">"{{ usuario.username }}"</span>?
+    </p>
+
+    <form method="post" action="{% url 'eliminar_usuario' %}" class="flex flex-col items-center space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="username" value="{{ usuario.username }}">
+        <input type="hidden" name="confirm" value="1">
+        <button type="submit" class="bg-red-700 hover:bg-red-500 text-white px-6 py-2 rounded-lg shadow-md">
+            Confirmar Eliminación
+        </button>
+    </form>
+
+    <div class="text-center">
+        <a href="{% url 'home_superusuario' %}" class="text-blue-700 hover:underline">Cancelar y volver</a>
+    </div>
+
+</div>
 {% endblock %}
