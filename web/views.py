@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
 from django.contrib.auth.models import User
-from .forms import CustomUserCreationForm, ClienteForm, ProfesorForm
-from .models import CustomUser, Cliente, Profesor
-from .decoradores import role_required
-from .decoradores import solo_profesores
+from .forms import CustomUserCreationForm, ClienteForm, ProfesorForm, MembresiaForm
+from .models import CustomUser, Cliente, Membresia
+from .decoradores import role_required, solo_profesores, superuser_o_profesor 
+from django.contrib import messages
+
 
 def home(request):
     return render(request, 'base.html')
@@ -169,9 +169,9 @@ def buscar_usuarios(request):
             Q(first_name__icontains=query) |
             Q(last_name__icontains=query) |
             Q(email__icontains=query)
-        )
+        ).prefetch_related('membresia_set')
 
-    return render(request, 'buscar_usuarios.html', {'resultados': resultados})
+    return render(request, 'buscar_usuarios.html', {'query': query, 'resultados': resultados})
 
 @login_required
 def home_redirect(request):
@@ -216,15 +216,31 @@ def eliminar_usuario(request):
     return render(request, 'eliminar_usuario.html', {'usuario': usuario})
 
 
-# def eliminar_usuario(request,username):
-#     if request.method == 'POST':
-#         username = request.POST.get('username')
-#         try:
-#             usuario = CustomUser.objects.get(username=username)
-#             usuario.delete()
-#             messages.success(request, f"El usuario {username} ha sido eliminado correctamente.")
-#         except CustomUser.DoesNotExist:
-#             messages.error(request, f"El usuario con el nombre de usuario '{username}' no existe.")
-        
-#         return redirect('home_superusuario')  # Redirige al panel de administración
-#     return render(request, 'base.html')  # Aquí, asegúrate de que esto sea correcto.
+
+def es_superuser_o_profesor(user):
+    return user.is_authenticated and (user.rol == 'superuser' or user.rol == 'profesor')
+
+
+@login_required
+@superuser_o_profesor
+def gestionar_membresias(request):
+
+    if request.method == 'POST':
+        form = MembresiaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Membresía creada con éxito.')
+            return redirect('gestion_membresias')
+    else:
+        form = MembresiaForm()
+
+    if form.is_valid():
+        print("Formulario válido:", form.cleaned_data)  # <- temporal
+        form.save()
+        messages.success(request, 'Membresía creada con éxito.')
+        return redirect('gestion_membresias')
+    else:
+        print("Errores:", form.errors)  # <- temporal    
+
+    membresias = Membresia.objects.all()
+    return render(request, 'gestion_membresias.html', {'form': form, 'membresias': membresias})

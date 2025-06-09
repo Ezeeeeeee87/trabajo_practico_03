@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = [
@@ -37,3 +38,30 @@ class Cliente(models.Model):
 
     def __str__(self):
         return f"Cliente: {self.user.first_name} {self.user.last_name}"
+    
+
+
+class Membresia(models.Model):
+    DURACION_CHOICES = [
+        (1, '1 mes'),
+        (3, '3 meses'),
+        (6, '6 meses'),
+    ]
+    
+    TIPO_CHOICES = [
+        ('libre', 'Pase libre'),
+        ('2xsemana', '2 veces por semana'),
+        ('3xsemana', '3 veces por semana'),
+    ]
+
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    fecha_inscripcion = models.DateField(default=timezone.now)
+    duracion_meses = models.PositiveIntegerField(choices=DURACION_CHOICES)
+    tipo_membresia = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    monto = models.DecimalField(max_digits=8, decimal_places=2)
+
+    def fecha_vencimiento(self):
+        return self.fecha_inscripcion + timezone.timedelta(days=30 * self.duracion_meses)
+
+    def __str__(self):
+        return f"{self.cliente} - {self.get_duracion_meses_display()} - {self.get_tipo_membresia_display()}"    
